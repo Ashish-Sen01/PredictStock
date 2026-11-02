@@ -54,26 +54,9 @@ catboost_info/
 */catboost_info/
 */*/*/events.out.tfevents*
 
-# --- Large Datasets (> 25MB - Exceeds GitHub Limits) ---
-# Raw transaction files
-data/raw/sales.csv
-data/raw/discounts_history.csv
-data/raw/online.csv
-data/raw/price_history.csv
-
-# Large intermediate processed parquets
-data/processed/sales_audited.parquet
-data/processed/sales_prepared.parquet
-data/processed/daily_panel_corrected.parquet
-
-# --- Keep Essential App Runtime Data ---
-!data/processed/final_demand_forecast.parquet
-!data/processed/final_inventory_recommendation.parquet
-!data/processed/final_inventory_recommendation.csv
-!data/raw/catalog.csv
-!data/raw/stores.csv
-!data/raw/actual_matrix.csv
-!data/raw/markdowns.csv
+# --- Datasets (Raw & Processed Data) ---
+# Download original dataset from Kaggle: https://www.kaggle.com/datasets/svizor/retail-sales-forecasting-data
+data/
 
 # --- Operating System & IDE Files ---
 .DS_Store
