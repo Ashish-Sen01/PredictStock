@@ -107,33 +107,3 @@ PredictStock/
 └── README.md                 # Project documentation
 ```
 
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- **Python**: Version 3.9 or higher
-- **Node.js**: Version 18 or higher
-
-### 1. Launch the Backend
-Open a terminal in the project root:
-```bash
-cd backend
-pip install -r requirements.txt
-python run.py
-```
-> The API server will be live at: `http://localhost:8000` (API documentation at `http://localhost:8000/docs`).
-
-### 2. Launch the Dashboard
-Open a second terminal in the project root:
-```bash
-cd frontend
-npm install
-npm run dev
-```
-> The web dashboard will be accessible at: `http://localhost:5173`.
-
----
-
-## 📄 License
-This project is developed for educational and portfolio demonstration purposes.
