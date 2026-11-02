@@ -1,136 +1,139 @@
-# 📦 PredictStock — Full-Stack AI Demand Forecasting & Inventory Optimization
+# PredictStock: An AI-Based Demand Forecasting and Inventory Optimization System
 
-Enterprise full-stack web application designed for retail multi-horizon demand forecasting and automated replenishment decision support. Built with a high-performance **FastAPI (Python)** backend serving the core LightGBM models and optimization logic, paired with a modern, glassmorphic **React 18 + Vite** frontend.
+PredictStock is an end-to-end retail intelligence platform that combines machine learning demand forecasting with automated inventory replenishment optimization. It enables retail planners and store managers to eliminate stockouts, prevent overstocking, and make data-driven ordering decisions across multiple store branches and product hierarchies.
 
 ---
 
-## 🏗️ Architecture Overview
+## 💡 Project Concept & Workflow
+
+Retail supply chains face a dual challenge: under-stocking leads to lost revenue and customer dissatisfaction, while over-stocking locks up capital and causes inventory depreciation. **PredictStock** bridges the gap between historical sales patterns and actionable purchasing orders through a four-stage intelligent workflow:
+
+```
+[ Historical Sales & Catalog Data ] 
+                 │
+                 ▼
+[ 1. Data Processing & Auditing ] ──► Cleaned sales transactions, discounts, and store hierarchies
+                 │
+                 ▼
+[ 2. AI Multi-Horizon Forecasting ] ──► LightGBM Direct Models (7-Day, 30-Day, 90-Day horizons)
+                 │
+                 ▼
+[ 3. Inventory Optimization Engine ] ──► Dynamic safety buffer, required stock & reorder quantities
+                 │
+                 ▼
+[ 4. Interactive Decision Dashboard ] ──► Visual analytics, what-if simulator & replenishment workbench
+```
+
+### 1. Data Preparation & Feature Auditing
+- Ingests multi-store sales transactions, catalog metadata, promotional discounts, and store hierarchy details.
+- Validates data integrity, fills calendar gaps, and handles intermittent or seasonal retail sales trends.
+
+### 2. Multi-Horizon Demand Forecasting
+- Employs a **Direct Multi-Horizon Forecasting** approach using gradient-boosted decision trees (LightGBM).
+- Generates independent forecasts for three key operational timeframes:
+  - **7-Day Short-Term**: Rapid tactical replenishment and shelf management.
+  - **30-Day Operational (Primary)**: Standard monthly replenishment and distributor purchase orders.
+  - **90-Day Strategic**: Quarterly warehouse allocation and seasonal supply chain planning.
+- Achieves high forecasting precision with an **R² score exceeding 0.92** on untouched evaluation datasets.
+
+### 3. Inventory Replenishment & Optimization Engine
+- Compares forecasted demand against live on-hand inventory levels for each product-store pair.
+- Computes:
+  - **Safety Buffer Stock**: Configurable risk buffer to hedge against unexpected sales spikes.
+  - **Required Stock**: 30-Day Forecasted Demand × (1 + Safety Buffer).
+  - **Stock Status**: Categorizes items as **Critical** (<50% coverage), **Low** (50%–100%), or **Sufficient** (≥100%).
+  - **Recommended Reorder Units**: Exact deficit to order immediately.
+
+---
+
+## 🖥️ Dashboard Features
+
+PredictStock features an interactive, clean enterprise web dashboard that turns forecast numbers into actionable purchasing recommendations:
+
+### 1. 📊 Executive & Store Analytics
+- **High-Level KPI Summary**: Instant visibility into total evaluated product-store pairs, total 30-day forecasted demand volume, on-hand inventory, and total recommended order units.
+- **Stock Health Breakdown**: Donut chart showing the proportion of items in Critical, Low, and Sufficient stock conditions.
+- **Store-by-Store Comparison**: Grouped charts comparing current stock vs. required stock vs. reorder quantities across all retail branches.
+- **Top Urgent Items**: Ranked overview highlighting the product-store pairs facing the most severe stock deficits.
+- **Multi-Horizon Demand Volume**: Side-by-side comparison of 7-day, 30-day, and 90-day demand totals across branches.
+
+### 2. 🔍 Product Deep Dive & What-If Simulator
+- **Single-Product Inspection**: Detailed view for any SKU across individual store branches with catalog specifications.
+- **Interactive "What-If" Simulation**:
+  - Adjust on-hand inventory live to evaluate immediate stock status changes.
+  - Modify the safety buffer slider (0% to 100%) to observe real-time impacts on recommended order volume.
+- **Stock Coverage Gauge**: Intuitive visual dial illustrating current stock coverage relative to required levels.
+- **Demand Trend Curves**: Multi-horizon demand curves (7D, 30D, 90D) comparing product forecasts against category averages.
+- **Related Products Panel**: Recommendations for related items within the same category and store for cross-replenishment planning.
+
+### 3. 📋 Replenishment Workbench
+- **Actionable Order Grid**: Centralized table presenting stock health status, current inventory, multi-horizon forecasts, required stock, and exact reorder recommendations.
+- **Visual Stock Health Indicators**: Color-coded badges and mini progress indicators for quick identification of critical stockouts.
+- **Search & Pagination**: Effortlessly filter and browse across thousands of product-store combinations.
+- **Export Data**: One-click download of the active replenishment recommendations in **CSV** or **Parquet** formats for direct integration with ERP or procurement systems.
+
+### 4. 🧠 Model Performance & Validation
+- **Accuracy Metrics**: Transparent evaluation reporting R² score, Mean Absolute Error (MAE), and bias metrics on untouched test data.
+- **Multi-Horizon Benchmarking**: Clear performance breakdown demonstrating consistent accuracy across 7-day, 30-day, and 90-day horizons.
+
+### 5. ⚙️ Global Optimization & Scope Controls
+- **Branch Filtering**: Filter analytics and tables by individual stores or all branches simultaneously.
+- **Safety Policy Control**: Set enterprise-wide default safety buffers (from lean 0% to conservative 100%).
+- **Status Filter**: Focus specifically on critical stockout risks or items requiring immediate reorder.
+- **Custom Inventory Ingestion**: Upload custom store stock CSVs or switch back to default demonstration inventory anytime.
+
+---
+
+## 📂 Project Structure
 
 ```
 PredictStock/
-├── backend/                  # FastAPI REST API Backend
-│   ├── main.py               # API endpoints, data ingestion & in-memory state
-│   ├── requirements.txt      # Backend Python dependencies
-│   ├── run.py                # Uvicorn entry point (port 8000)
-│   └── start.bat             # 1-click startup script for Windows
-├── frontend/                 # React 18 + Vite Web Application
-│   ├── package.json          # Node dependencies (React, Recharts, Lucide, Axios)
-│   ├── vite.config.js        # Vite dev server with /api proxy to localhost:8000
-│   ├── index.html            # Entry HTML with Inter typography
-│   ├── start.bat             # 1-click startup script for Windows
-│   └── src/
-│       ├── App.jsx           # Master application container & global filters
-│       ├── index.css         # Glassmorphism styling & color tokens
-│       ├── api/client.js     # Axios API service client
-│       ├── components/       # GlassNavbar, GlassSidebar, KPICard, GlassCard, StatusBadge, Spinner
-│       ├── charts/           # Recharts components + Custom SVG Arc Gauge
-│       └── tabs/             # 4 Dedicated Enterprise Tabs
-├── src/                      # Existing Python ML & Business Logic
-│   ├── forecasting.py        # Parquet forecast loader
-│   ├── inventory.py          # Safety stock, required stock & reorder logic
-│   └── predictstock_service.py # Orchestrator & related product services
-└── data/                     # Audited sales, catalog, stores & precomputed forecasts
+├── backend/                  # FastAPI Application Service
+│   ├── main.py               # Application endpoints & business services
+│   ├── requirements.txt      # Python dependencies
+│   ├── run.py                # Server launcher script
+│   └── start.bat             # 1-Click Windows startup script
+├── frontend/                 # React + Vite Web Application
+│   ├── src/                  # Dashboard pages, components & visual charts
+│   ├── package.json          # Node dependencies
+│   └── start.bat             # 1-Click Windows startup script
+├── src/                      # Core Forecasting & Optimization Logic
+│   ├── forecasting.py        # Model loading & forecast generation
+│   ├── inventory.py          # Replenishment rules & safety buffer engine
+│   └── predictstock_service.py # End-to-end orchestration service
+├── models/                   # Serialized ML model binaries (LightGBM, CatBoost)
+├── notebooks/                # Jupyter exploration & model training notebooks
+├── data/                     # Store catalogs, audit data, and precomputed forecasts
+└── README.md                 # Project documentation
 ```
 
 ---
 
-## 🎨 UI & Design Specification
+## 🚀 Getting Started
 
-- **Theme Style**: Option C (Clean Enterprise Analytics) with glassmorphic accents (`backdrop-filter: blur(16px)`).
-- **Color Palette**:
-  - Background: `#f0f4f8` (soft enterprise blue-gray)
-  - Cards: `rgba(255, 255, 255, 0.82)` with subtle border `rgba(226, 232, 240, 0.85)`
-  - Primary Accent: `#1d4ed8` (Corporate Blue)
-  - Status Indicators: Critical (`#dc2626`), Low (`#d97706`), Sufficient (`#16a34a`)
-- **Typography**: Inter (Google Fonts) with tabular numeral features for financials and quantities.
+### Prerequisites
+- **Python**: Version 3.9 or higher
+- **Node.js**: Version 18 or higher
 
----
-
-## 🚀 Quick Startup Guide
-
-### 1. Start the Backend API (FastAPI)
-
-In a new terminal window:
+### 1. Launch the Backend
+Open a terminal in the project root:
 ```bash
 cd backend
 pip install -r requirements.txt
 python run.py
 ```
-*Or double-click `backend\start.bat` on Windows.*
+> The API server will be live at: `http://localhost:8000` (API documentation at `http://localhost:8000/docs`).
 
-The backend will start at: **`http://localhost:8000`**  
-Interactive API docs available at: **`http://localhost:8000/docs`**
-
----
-
-### 2. Start the Frontend Application (React + Vite)
-
-In a second terminal window:
+### 2. Launch the Dashboard
+Open a second terminal in the project root:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-*Or double-click `frontend\start.bat` on Windows.*
-
-The frontend web app will start at: **`http://localhost:5173`**
+> The web dashboard will be accessible at: `http://localhost:5173`.
 
 ---
 
-## 🧭 Four Core Analytical Tabs
-
-### 1. 📊 Executive & Store Analytics
-- **Top Metric Cards**: Product-Store pairs, 30-Day demand volume, Current available stock (with coverage %), Required stock with safety buffer, and Total recommended replenishment units.
-- **Stock Status Donut**: Proportional breakdown of Critical (&lt;50%), Low (50–100%), and Sufficient (&ge;100%) stock pairs.
-- **Store Comparison Bar Chart**: Side-by-side grouped comparison across branches (Store 1, Store 2, Store 3, Store 4) for Current Stock vs. Required Stock vs. Recommended Order.
-- **Top 12 Urgent Items**: Ranked horizontal bar chart highlighting the product-store pairs with the highest order deficit.
-- **Multi-Horizon Volume**: Grouped multi-horizon demand totals (7-Day, 30-Day Primary, 90-Day) per store.
-
-### 2. 🔍 Product-Store Deep Dive & Simulator
-- **Interactive Selectors**: Filter by Store Branch and inspect individual product IDs.
-- **What-If Simulation Controls**:
-  - Live **Current Stock** input box (simulates instant receipts or shrink).
-  - Dynamic **Safety Buffer** slider (0% to 100%).
-- **Custom SVG Semicircle Arc Gauge**: Custom SVG gauge rendering stock coverage percentage with colored critical (red 0–50%), low (amber 50–100%), and sufficient (green &gt;100%) segments with a dynamic needle.
-- **Demand Horizon Curve**: Line chart tracking 7D, 30D, and 90D predictions with benchmark reference lines.
-- **Related Products (Category Match)**: Suggestions sharing catalog metadata (department, class, subclass) with saved forecasts for the same branch.
-
-### 3. 📋 Replenishment Workbench
-- **Sortable Order Table**: Displays `item_id`, `store_id`, `dept_name`, `item_type`, `stock_status`, `current_stock`, `7D`, `30D`, `90D`, `safety_stock`, `required_stock`, `stock_ratio`, and `reorder_quantity`.
-- **Interactive Mini Progress Bars**: Visual stock ratio column for rapid triage.
-- **Critical Highlighting**: Critical rows are highlighted with a soft red tint.
-- **Pagination**: 50 records per page with next/previous controls and direct page jump.
-- **Direct Exports**: One-click download buttons for **CSV** (`predictstock_recommendations.csv`) and **Parquet** (`predictstock_recommendations.parquet`).
-
-### 4. 🧠 ML Benchmarks & Model Evaluation
-- **Untouched Test Performance**:
-  - 7-Day Untouched Test $R^2 = 0.9346$ (MAE: 8.7609, Bias: -6.17%)
-  - 30-Day Untouched Test $R^2 = 0.9292$ (MAE: 32.9550, Bias: -2.26%)
-  - Fixed Evaluation Universe: 13,447 pairs with 99.54% horizon consistency ($30\text{D} \ge 7\text{D}$).
-- **Interactive Multi-Model Comparison**: Toggle between $R^2$, MAE, and RMSE to benchmark LightGBM vs. CatBoost vs. XGBoost across all 3 horizons.
-- **Baseline Comparison & Recursive Strategy Rejection**: Details why earlier recursive autoregressive models (+93.49% bias error) were rejected in favor of direct multi-horizon LightGBM.
-
----
-
-## 📡 REST API Specification
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/health` | Service health status and dataset pair count |
-| `GET` | `/api/forecast-info` | Metadata on stores and forecast dataset presence |
-| `POST` | `/api/compute` | Computes inventory recommendations given `{ "safety_buffer": 0.20 }` |
-| `POST` | `/api/upload-stock` | Accepts multipart CSV upload to update live stock |
-| `POST` | `/api/reset-stock` | Restores default synthetic seed-42 demonstration inventory |
-| `GET` | `/api/download/csv` | Streams current recommendation dataset as CSV |
-| `GET` | `/api/download/template` | Downloads standard CSV template (`item_id,store_id,current_stock`) |
-| `GET` | `/api/download/parquet` | Streams current recommendations as binary Parquet |
-| `GET` | `/api/ml-benchmarks` | Returns evaluation benchmark metrics and baseline comparisons |
-| `GET` | `/api/related-products` | Returns category-matched items for a given item and store |
-
----
-
-## 🛡️ Robustness & Fallback Handling
-
-- **Missing Data Resiliency**: If processed parquet files are unavailable, the backend automatically generates a reproducible synthetic dataset (seed 42) matching the exact schema and distributions so testing continues uninterrupted.
-- **Client-Side Debounce**: Buffer slider re-computations are debounced (800ms) to ensure smooth browser performance.
-- **Full Metadata Enrichment**: Automatically enriches recommendations with catalog departments, product classes, and store city/format metadata when available.
+## 📄 License
+This project is developed for educational and portfolio demonstration purposes.
