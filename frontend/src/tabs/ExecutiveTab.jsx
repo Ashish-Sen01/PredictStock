@@ -87,13 +87,13 @@ export default function ExecutiveTab({ data = [] }) {
         </GlassCard>
       </div>
 
-      {/* Row 2: Top 12 Urgent Items (55%) + Multi-Horizon Forecast Volume (45%) */}
+      {/* Row 2: Top 10 Urgent Items (55%) + Multi-Horizon Forecast Volume (45%) */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(380px, 54%) minmax(320px, 1fr)',
         gap: '1.5rem',
       }}>
-        {/* Top 12 Urgent Items */}
+        {/* Top 10 Urgent Items */}
         <GlassCard interactive>
           <div style={{
             display: 'flex',
@@ -104,7 +104,7 @@ export default function ExecutiveTab({ data = [] }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Flame size={18} color="var(--critical)" />
               <h3 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--text-main)' }}>
-                Top 12 Critical Replenishment Priorities
+                Top 10 Critical Replenishment Priorities
               </h3>
             </div>
             <span style={{

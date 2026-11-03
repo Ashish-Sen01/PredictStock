@@ -14,7 +14,7 @@ export default function TopUrgentChart({ data }) {
   const sorted = [...data]
     .filter((d) => (d.reorder_quantity || 0) > 0)
     .sort((a, b) => (b.reorder_quantity || 0) - (a.reorder_quantity || 0))
-    .slice(0, 12)
+    .slice(0, 10)
     .reverse()
 
   const chartData = sorted.map((d) => ({
